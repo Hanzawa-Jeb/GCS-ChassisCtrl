@@ -13,13 +13,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a407c99b-f440-4520-996c-d4839ab08f51" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/chassis_control_top.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chassis_control_top.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kinematics.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kinematics.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path_planning.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/path_planning.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chassis_control_top.c" beforeDir="false" afterPath="$PROJECT_DIR$/chassis_control_top.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path_planning.c" beforeDir="false" afterPath="$PROJECT_DIR$/chassis_control.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/path_planning.h" beforeDir="false" afterPath="$PROJECT_DIR$/chassis_control.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +71,7 @@
       <option name="presentableId" value="Default" />
       <updated>1756731164527</updated>
       <workItem from="1756731165840" duration="841000" />
-      <workItem from="1756732031813" duration="1621000" />
+      <workItem from="1756732031813" duration="3134000" />
     </task>
     <servers />
   </component>
