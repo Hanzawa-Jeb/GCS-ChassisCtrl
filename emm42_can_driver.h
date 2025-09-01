@@ -61,26 +61,26 @@ typedef struct {
     Control_Mode control_mode;  // 当前控制模式
     uint8_t is_enabled;         // 使能状态
     uint8_t error_code;         // 错误代码
-    
+
     // 速度模式参数
     int16_t target_velocity;    // 目标速度(RPM)
     int16_t actual_velocity;    // 实际速度(RPM)
     uint8_t acceleration;       // 加速度档位
-    
+
     // 位置模式参数
     int32_t target_position;    // 目标位置(脉冲数)
     int32_t actual_position;    // 实际位置(脉冲数)
     Position_Mode pos_mode;     // 位置模式(相对/绝对)
-    
+
     // 状态标志
     uint8_t is_moving;          // 运动状态
     uint8_t position_reached;   // 位置到达标志
     uint8_t temperature;        // 电机温度
-} Unified_Motor_Data_t;
+} Motor_Data_t;
 
 // 底盘控制结构体
 typedef struct {
-    Motor_Data_t motors[MOTOR_NUM];  // 四个电机数据()
+    Motor_Data_t motors[MOTOR_NUM];  // 四个电机数据
     Checksum_Mode checksum_mode;     // 校验方式
     uint8_t sync_flag;               // 同步触发标志
     uint8_t comm_ok;                 // 通信正常标志
@@ -88,16 +88,32 @@ typedef struct {
 } Chassis_Control_t;
 
 // 函数声明
-void Emm42_Init(Chassis_Control_t *chassis, FDCAN_HandleTypeDef *hfdcan, Checksum_Mode checksum_mode);  // 初始化底盘电机驱动
-void Emm42_EnableMotor(Chassis_Control_t *chassis, uint8_t motor_index, uint8_t enable);  // 电机使能控制
-void Emm42_SetVelocity(Chassis_Control_t *chassis, uint8_t motor_index, Rotation_Dir dir, int16_t velocity, uint8_t acceleration, uint8_t sync_flag);  // 设置单个电机速度
-void Emm42_TriggerSync(Chassis_Control_t *chassis);  // 触发四个电机同步运动
-void Emm42_StopMotor(Chassis_Control_t *chassis, uint8_t motor_index, uint8_t sync_flag);  // 立即停止电机
-void Emm42_ClearEncoder(Chassis_Control_t *chassis, uint8_t motor_index);  // 电机编码器转动角度清零
-void Emm42_ReadVelocity(Chassis_Control_t *chassis, uint8_t motor_index);  // 读取电机实时转速
-void Emm42_ReadPosition(Chassis_Control_t *chassis, uint8_t motor_index);  // 读取电机实时位置
-void Emm42_MoveChassis(Chassis_Control_t *chassis, int16_t vx, int16_t vy, int16_t vw);  // 控制整个底盘运动
-void Emm42_UpdateFromCAN(Chassis_Control_t *chassis, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data);  // 从CAN接收数据更新电机状态
+// 初始化底盘电机驱动
+void Emm42_Init(Chassis_Control_t *chassis, FDCAN_HandleTypeDef *hfdcan, Checksum_Mode checksum_mode);
+// 设置电机控制模式
+void Emm42_SetControlMode(Chassis_Control_t *chassis, uint8_t motor_index, Control_Mode mode);
+// 电机使能控制
+HAL_StatusTypeDef Emm42_EnableMotor(Chassis_Control_t *chassis, uint8_t motor_index, uint8_t enable);
+// 设置电机速度
+HAL_StatusTypeDef Emm42_SetVelocity(Chassis_Control_t *chassis, uint8_t motor_index, Rotation_Dir dir, int16_t velocity, uint8_t acceleration, uint8_t sync_flag);
+// 设置电机位置
+HAL_StatusTypeDef Emm42_SetPosition(Chassis_Control_t *chassis, uint8_t motor_index, Rotation_Dir dir, int16_t velocity, uint8_t acceleration, int32_t pulse_count, Position_Mode pos_mode, uint8_t sync_flag);
+// 触发四个电机同步运动
+HAL_StatusTypeDef Emm42_TriggerSync(Chassis_Control_t *chassis);
+// 立即停止电机
+HAL_StatusTypeDef Emm42_StopMotor(Chassis_Control_t *chassis, uint8_t motor_index, uint8_t sync_flag);
+// 电机编码器转动角度清零
+HAL_StatusTypeDef Emm42_ClearEncoder(Chassis_Control_t *chassis, uint8_t motor_index);
+// 读取电机实时转速
+HAL_StatusTypeDef Emm42_ReadVelocity(Chassis_Control_t *chassis, uint8_t motor_index);
+// 读取电机实时位置
+HAL_StatusTypeDef Emm42_ReadPosition(Chassis_Control_t *chassis, uint8_t motor_index);
+// 控制整个底盘运动
+HAL_StatusTypeDef Emm42_MoveChassis(Chassis_Control_t *chassis, int16_t vx, int16_t vy, int16_t vw);
+// 检查位置模式下电机是否到达目标位置
+HAL_StatusTypeDef Emm42_CheckPositionReached(Chassis_Control_t *chassis, uint8_t motor_index);
+// 从CAN接收数据更新电机状态
+void Emm42_UpdateFromCAN(Chassis_Control_t *chassis, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data);
 
 // 辅助函数
 uint8_t Calculate_Checksum(Chassis_Control_t *chassis, uint8_t *data, uint8_t len);  // 计算校验和
