@@ -1,5 +1,6 @@
 #include "emm42_can_driver.h"  // 包含自定义头文件
 #include "string.h"            // 包含字符串处理函数
+#include <stdlib.h>
 
 // 电机ID数组（CAN地址）
 static const uint8_t motor_addresses[MOTOR_NUM] = {
