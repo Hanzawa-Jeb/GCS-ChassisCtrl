@@ -6,6 +6,16 @@
 //我们在这里假设已经包含了必要的HAL库头文件
 //我们假设有若干个运动存储在一个序列当中，定义一个struct来存储这些序列对应的x, y, 角度要求
 
+typedef struct action {
+    int x;
+    //the relative x coordinate
+    int y;
+    //the relative y coordinate
+    int angle;
+    //the relative angle
+} OneMove;
+//the parameter of a single move
+
 int main() {
 
     int MoveCnt = 0;
