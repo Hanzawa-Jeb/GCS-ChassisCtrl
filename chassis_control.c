@@ -25,6 +25,13 @@ int chassis_control_move_linear(int distance)
     angle_3 = (int)wheel_rotation_deg; // Left Back
     angle_4 = (int)wheel_rotation_deg; // Right Back
 
+    // Send to motors (relative + sync)
+    extern Chassis_Control_t chassis;
+    chassis_control_send_angles(&chassis,
+                                (double)angle_1, (double)angle_2,
+                                (double)angle_3, (double)angle_4,
+                                200, 10);
+
     return 0; // success
 }
 
@@ -48,6 +55,13 @@ int chassis_control_turn(int angle)
     angle_2 = -(int)wheel_rotation_deg;  // Right Front
     angle_3 = -(int)wheel_rotation_deg;  // Left Back
     angle_4 = (int)wheel_rotation_deg;   // Right Back
+
+    // Send to motors (relative + sync)
+    extern Chassis_Control_t chassis;
+    chassis_control_send_angles(&chassis,
+                                (double)angle_1, (double)angle_2,
+                                (double)angle_3, (double)angle_4,
+                                200, 10);
 
     return 0; // success
 }
