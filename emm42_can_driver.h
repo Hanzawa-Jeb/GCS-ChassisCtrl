@@ -61,17 +61,17 @@ typedef struct {
     Control_Mode control_mode;  // 当前控制模式
     uint8_t is_enabled;         // 使能状态
     uint8_t error_code;         // 错误代码
-
+    
     // 速度模式参数
     int16_t target_velocity;    // 目标速度(RPM)
     int16_t actual_velocity;    // 实际速度(RPM)
     uint8_t acceleration;       // 加速度档位
-
+    
     // 位置模式参数
     int32_t target_position;    // 目标位置(脉冲数)
     int32_t actual_position;    // 实际位置(脉冲数)
     Position_Mode pos_mode;     // 位置模式(相对/绝对)
-
+    
     // 状态标志
     uint8_t is_moving;          // 运动状态
     uint8_t position_reached;   // 位置到达标志

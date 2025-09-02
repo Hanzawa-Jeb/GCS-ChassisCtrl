@@ -1,9 +1,9 @@
 #include "main.h"
+#include "chassis_control_top.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-//我们在这里假设已经包含了必要的HAL库头文件
 //我们假设有若干个运动存储在一个序列当中，定义一个struct来存储这些序列对应的x, y, 角度要求
 
 typedef struct action {
@@ -31,7 +31,9 @@ int main() {
     //for every move, we need to be sure what to be done at each step
     //for example, we only show what to be done for one step
 
+    controlTop(MoveSeq[0].x, MoveSeq[0].y, MoveSeq[0].angle);
 
+    //only for demonstration, in practical, we need to fill the MoveSeq.
 
     return 0;
 }
