@@ -1,4 +1,5 @@
 #include "chassis_control.h"
+#include "emm42_can_driver.h"
 #include <math.h>
 
 #define WHEEL_RADIUS 50.0       // mm (radius = diameter/2)
@@ -49,4 +50,36 @@ int chassis_control_turn(int angle)
     angle_4 = (int)wheel_rotation_deg;   // Right Back
 
     return 0; // success
+}
+
+static int32_t degrees_to_pulses(double degrees)
+{
+    const double pulses_per_rev = 3200.0;
+    double pulses = fabs(degrees) / 360.0 * pulses_per_rev;
+    return (int32_t)llround(pulses);
+}
+
+static Rotation_Dir dir_from_degrees(double degrees)
+{
+    return (degrees >= 0.0) ? DIR_CW : DIR_CCW;
+}
+
+void chassis_control_send_angles(Chassis_Control_t *chassis,
+                                 double angle_1, double angle_2, double angle_3, double angle_4,
+                                 int16_t velocity, uint8_t acceleration)
+{
+    if (chassis == NULL) {
+        return;
+    }
+
+    Emm42_SetPosition(chassis, 0, dir_from_degrees(angle_1), velocity, acceleration,
+                      degrees_to_pulses(angle_1), POSITION_RELATIVE, 1);
+    Emm42_SetPosition(chassis, 1, dir_from_degrees(angle_2), velocity, acceleration,
+                      degrees_to_pulses(angle_2), POSITION_RELATIVE, 1);
+    Emm42_SetPosition(chassis, 2, dir_from_degrees(angle_3), velocity, acceleration,
+                      degrees_to_pulses(angle_3), POSITION_RELATIVE, 1);
+    Emm42_SetPosition(chassis, 3, dir_from_degrees(angle_4), velocity, acceleration,
+                      degrees_to_pulses(angle_4), POSITION_RELATIVE, 1);
+
+    Emm42_TriggerSync(chassis);
 }

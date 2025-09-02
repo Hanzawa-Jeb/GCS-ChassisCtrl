@@ -53,7 +53,7 @@ void Emm42_Init(Chassis_Control_t *chassis, FDCAN_HandleTypeDef *hfdcan, Checksu
     sFilterConfig.FilterID2 = 0x000;
 
     // 应用FDCAN滤波器配置
-    if (HAL_FDCAN_ConfigFilter(chassis->hfdcan, &can_filter) != HAL_OK)
+    if (HAL_FDCAN_ConfigFilter(chassis->hfdcan, &sFilterConfig) != HAL_OK)
     {
         Error_Handler();  // 如果配置失败，调用错误处理函数
     }
@@ -65,7 +65,7 @@ void Emm42_Init(Chassis_Control_t *chassis, FDCAN_HandleTypeDef *hfdcan, Checksu
     }
     
     // 启动CAN接收中断（当FIFO0中有消息时触发中断）
-    if (HAL_FDCAN_ActivateNotification(chassis->hfdcan, FDCAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+    if (HAL_FDCAN_ActivateNotification(chassis->hfdcan, FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != HAL_OK)
     {
         Error_Handler();  // 如果启用中断失败，调用错误处理函数
     }
@@ -270,7 +270,7 @@ HAL_StatusTypeDef Emm42_SetPosition(Chassis_Control_t *chassis, uint8_t motor_in
     data[11] = sync_flag;
     
     // 计算校验和
-    uint8_t checksum = Emm42_CalculateChecksum(chassis, data, 12);
+    uint8_t checksum = Calculate_Checksum(chassis, data, 12);
     data[12] = checksum;
     
     // 发送消息
@@ -299,7 +299,7 @@ HAL_StatusTypeDef Emm42_TriggerSync(Chassis_Control_t *chassis)
     data[2] = 0x66;                // 固定值（协议要求）
     
     // 计算校验和
-    uint8_t checksum = Emm42_CalculateChecksum(chassis, data, 3);
+    uint8_t checksum = Calculate_Checksum(chassis, data, 3);
     data[3] = checksum;
     
     // 发送消息
@@ -315,8 +315,9 @@ HAL_StatusTypeDef Emm42_TriggerSync(Chassis_Control_t *chassis)
 // 立即停止电机
 HAL_StatusTypeDef Emm42_StopMotor(Chassis_Control_t *chassis, uint8_t motor_index, uint8_t sync_flag)
 {
-    // 检查电机索引是否有效
-    if (motor_index >= MOTOR_NUM) return;
+    if (chassis == NULL || motor_index >= MOTOR_NUM) {
+        return HAL_ERROR;
+    }
     
     uint8_t data[5];                                 // 准备数据缓冲区
     data[0] = chassis->motors[motor_index].address;  // 地址
@@ -350,8 +351,9 @@ HAL_StatusTypeDef Emm42_StopMotor(Chassis_Control_t *chassis, uint8_t motor_inde
 // 电机编码器转动角度清零（重置指定电机的编码器计数值）
 HAL_StatusTypeDef Emm42_ClearEncoder(Chassis_Control_t *chassis, uint8_t motor_index)
 {
-    // 检查电机索引是否有效
-    if (motor_index >= MOTOR_NUM) return;
+    if (chassis == NULL || motor_index >= MOTOR_NUM) {
+        return HAL_ERROR;
+    }
     
     uint8_t data[4];                                 // 准备数据缓冲区
     data[0] = chassis->motors[motor_index].address;  // 地址
@@ -382,8 +384,9 @@ HAL_StatusTypeDef Emm42_ClearEncoder(Chassis_Control_t *chassis, uint8_t motor_i
 // 读取电机实时转速
 HAL_StatusTypeDef Emm42_ReadVelocity(Chassis_Control_t *chassis, uint8_t motor_index)
 {
-    // 检查电机索引是否有效
-    if (motor_index >= MOTOR_NUM) return;
+    if (chassis == NULL || motor_index >= MOTOR_NUM) {
+        return HAL_ERROR;
+    }
     
     uint8_t data[3];                                 // 准备数据缓冲区
     data[0] = chassis->motors[motor_index].address;  // 地址
@@ -437,7 +440,7 @@ HAL_StatusTypeDef Emm42_ReadPosition(Chassis_Control_t *chassis, uint8_t motor_i
 }
 
 // 控制整个底盘运动
-void Emm42_MoveChassis(Chassis_Control_t *chassis, int16_t vx, int16_t vy, int16_t vw)
+HAL_StatusTypeDef Emm42_MoveChassis(Chassis_Control_t *chassis, int16_t vx, int16_t vy, int16_t vw)
 {
     // 底盘运动学模型
     int16_t fl_speed = vx - vy + vw;  // 前左轮速度 = vx - vy + vw
@@ -537,7 +540,7 @@ void Emm42_UpdateFromCAN(Chassis_Control_t *chassis, FDCAN_RxHeaderTypeDef *rx_h
                 // 组合位置值（4字节，低字节在前）
                 int32_t position = (data[6] << 24) | (data[5] << 16) | (data[4] << 8) | data[3];
                 // 根据符号位确定位置方向
-                chassis->motors[motor_index].encoder_position = (sign == 0x00) ? position : -position;
+                chassis->motors[motor_index].actual_position = (sign == 0x00) ? position : -position;
             }
             break;
             

@@ -98,8 +98,11 @@ HAL_StatusTypeDef Emm42_EnableMotor(Chassis_Control_t *chassis, uint8_t motor_in
 HAL_StatusTypeDef Emm42_SetVelocity(Chassis_Control_t *chassis, uint8_t motor_index, Rotation_Dir dir, int16_t velocity, uint8_t acceleration, uint8_t sync_flag);
 // 设置电机位置
 HAL_StatusTypeDef Emm42_SetPosition(Chassis_Control_t *chassis, uint8_t motor_index, Rotation_Dir dir, int16_t velocity, uint8_t acceleration, int32_t pulse_count, Position_Mode pos_mode, uint8_t sync_flag);
+//pulse_count->一圈3200(?)
+//sync-flag:共同运动
 // 触发四个电机同步运动
 HAL_StatusTypeDef Emm42_TriggerSync(Chassis_Control_t *chassis);
+//
 // 立即停止电机
 HAL_StatusTypeDef Emm42_StopMotor(Chassis_Control_t *chassis, uint8_t motor_index, uint8_t sync_flag);
 // 电机编码器转动角度清零
@@ -117,6 +120,6 @@ void Emm42_UpdateFromCAN(Chassis_Control_t *chassis, FDCAN_RxHeaderTypeDef *rx_h
 
 // 辅助函数
 uint8_t Calculate_Checksum(Chassis_Control_t *chassis, uint8_t *data, uint8_t len);  // 计算校验和
-void Emm42_SendCANMessage(Chassis_Control_t *chassis, uint32_t std_id, uint8_t *data, uint8_t len);  // 发送CAN消息
+HAL_StatusTypeDef Emm42_SendCANMessage(Chassis_Control_t *chassis, uint32_t std_id, uint8_t *data, uint8_t len);  // 发送CAN消息
 
 #endif /* EMM42_CAN_DRIVER_H */

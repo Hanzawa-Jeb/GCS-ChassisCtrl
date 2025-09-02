@@ -14,6 +14,8 @@ int main(void)
         Emm42_EnableMotor(&chassis, i, 1);
         HAL_Delay(10);
     }
+
+    //implemented in main.c
     
     while (1)
     {
